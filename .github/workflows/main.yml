@@ -1,4 +1,4 @@
-name: Node.js CI/CD on Amazon Linux
+name: Deploy to EC2
 
 on:
   push:
@@ -7,25 +7,53 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Deploy to EC2
+      env:
+        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        HOST: ${{ secrets.REMOTE_HOST }}
+        USER: ${{ secrets.REMOTE_USER }}
+      run: |
+        echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+        echo "Current directory: $(pwd)"
+        echo "Listing home directory:"
+        ls -la ~
 
-    - name: Deploy to AWS EC2
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        source: "./"  # This now correctly points to the current directory
-        target: "/var/www/your_project_directory"
+        echo "Installing Node.js..."
+        if ! command -v nvm &> /dev/null; then
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+        fi
+        nvm install node
 
-    - name: Restart PM2 application
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.REMOTE_HOST }}
-        username: ${{ secrets.REMOTE_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          cd /var/www/your_project_directory
-          pm2 reload all  # This command restarts your application
+        echo "Installing PM2..."
+        if ! command -v pm2 &> /dev/null; then
+        npm install -g pm2
+        fi
+
+        REPO_URL="https://github.com/afkzoro/github-aws-ec2.git"
+        BRANCH="main"
+        REPO_DIR="$HOME/github-aws-ec2"
+
+        if [ -d "$REPO_DIR/.git" ]; then
+          cd "$REPO_DIR"
+          git pull origin "$BRANCH"
+        else
+          git clone "$REPO_URL" "$REPO_DIR"
+          cd "$REPO_DIR"
+        fi
+
+        cd "$REPO_DIR/simple-web-server"
+        npm install
+
+        cd ~/github-aws-ec2/simple-web-server
+        git pull origin main
+        npm install
+
+        echo "Starting/restarting application..."
+        pm2 restart server.js || pm2 start server.js
+        '
