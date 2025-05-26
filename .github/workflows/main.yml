@@ -38,12 +38,11 @@ jobs:
         REPO_URL="https://github.com/LuckyMcLucks/test-web.git"
         BRANCH="main"
         REPO_DIR="$VAR/WWW/webtemp"
-
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
-          git pull origin "$BRANCH"
+          sudo git pull origin "$BRANCH"
         else
-          git clone "$REPO_URL" "$REPO_DIR"
+          sudo git clone "$REPO_URL" "$REPO_DIR"
           cd "$REPO_DIR"
         fi
 
