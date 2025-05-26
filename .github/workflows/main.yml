@@ -36,24 +36,20 @@ jobs:
         npm install -g pm2
         fi
 
-        REPO_URL="https://github.com/afkzoro/github-aws-ec2.git"
+        REPO_URL="https://github.com/LuckyMcLucks/test-web"
         BRANCH="main"
-        REPO_DIR="$HOME/github-aws-ec2"
+        REPO_DIR="../../var/www"
 
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
-          git pull origin "$BRANCH"
+          sudo git pull origin "$BRANCH"
         else
-          git clone "$REPO_URL" "$REPO_DIR"
+          sudo git clone "$REPO_URL" "$REPO_DIR"
           cd "$REPO_DIR"
         fi
 
-        cd "$REPO_DIR/simple-web-server"
-        npm install
 
-        cd ~/github-aws-ec2/simple-web-server
-        git pull origin main
-        npm install
+
 
         echo "Starting/restarting application..."
         pm2 restart server.js || pm2 start server.js
