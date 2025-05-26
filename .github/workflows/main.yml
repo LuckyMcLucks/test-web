@@ -26,15 +26,4 @@ jobs:
         echo "Current directory: $(pwd)"
 
 
-        REPO_URL="https://github.com/LuckyMcLucks/test-web.git"
-        BRANCH="main"
-        REPO_DIR="/webtemp"
-        if [ -d "$REPO_DIR/.git" ]; then
-          cd "$REPO_DIR"
-          sudo git pull origin "$BRANCH"
-        else
-          sudo git clone "$REPO_URL" 
-          
-        fi
-
 
