@@ -35,9 +35,9 @@ jobs:
         npm install -g pm2
         fi
 
-        REPO_URL="https://github.com/afkzoro/github-aws-ec2.git"
+        REPO_URL="https://github.com/LuckyMcLucks/test-web.git"
         BRANCH="main"
-        REPO_DIR="$HOME/github-aws-ec2"
+        REPO_DIR="$VAR/WWW/webtemp"
 
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
@@ -50,7 +50,7 @@ jobs:
         cd "$REPO_DIR/simple-web-server"
         npm install
 
-        cd ~/github-aws-ec2/simple-web-server
+        cd ~/test-web/simple-web-server
         git pull origin main
         npm install
 
