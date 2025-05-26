@@ -26,8 +26,7 @@ jobs:
 
         REPO_URL="https://github.com/LuckyMcLucks/test-web.git"
         BRANCH="main"
-        REPO_DIR="../../var/www/test-web"
-
+        REPO_DIR="../../var/www/html/test"
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
           sudo git pull origin "$BRANCH"
