@@ -1,4 +1,4 @@
-name: Deploy to EC2
+name: Node.js CI/CD on Amazon Linux
 
 on:
   push:
@@ -7,23 +7,17 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Deploy to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        HOST: ${{ secrets.REMOTE_HOST }}
-        USER: ${{ secrets.REMOTE_USER }}
-      run: |
-        echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
-        echo "Current directory: $(pwd)"
-        echo "Listing home directory:"
-        ls -la ~
-
-        cd ../../var/www
-        echo "Current directory: $(pwd)"
 
 
 
+    - name: Deploy to AWS EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.REMOTE_HOST }}
+        username: ${{ secrets.REMOTE_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "./"  # This now correctly points to the current directory
+        target: "/var/www/your_project_directory"
