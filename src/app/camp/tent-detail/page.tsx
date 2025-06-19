@@ -10,6 +10,7 @@ import tentData from '@/data/Tent.json'
 import testimonialData from '@/data/Testimonial.json'
 import { TentType } from '@/type/TentType'
 import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import dynamic from "next/dynamic"
 const ExploreCamp = dynamic(() => import("@/components/Other/ExploreCamp"), { ssr: false })
 
@@ -31,7 +32,8 @@ interface GuestType {
     pet: number;
 }
 
-const TentDetail = () => {
+
+const TentDetailContent = () => {
     const params = useSearchParams()
     let tentId = params.get('id')
     const [viewMoreDesc, setViewMoreDesc] = useState<boolean>(false)
@@ -603,4 +605,9 @@ const TentDetail = () => {
         </>
     )
 }
+const TentDetail = () => (
+    <Suspense fallback={<div>Loading...</div>}>
+        <TentDetailContent />
+    </Suspense>
+)
 export default TentDetail
