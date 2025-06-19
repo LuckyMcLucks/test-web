@@ -13,13 +13,13 @@ import * as Icon from 'phosphor-react'
 import Slider from 'rc-slider'
 import 'rc-slider/assets/index.css'
 import { useSearchParams } from 'next/navigation'
-
+import { Suspense } from 'react'
 type Service = string;
 type Amenities = string;
 type Activities = string;
 type Terrain = string;
 
-const TopMapSidebar = () => {
+const TopMapSidebarContent = () => {
   const params = useSearchParams()
   const categoryParams = params.get('category')
   const continentsParams = params.get('continents')
@@ -556,4 +556,9 @@ const TopMapSidebar = () => {
   )
 }
 
+const TopMapSidebar = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <TopMapSidebarContent />
+  </Suspense>
+)
 export default TopMapSidebar
